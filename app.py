@@ -85,7 +85,7 @@ This AI Summarizer helps users quickly convert long text into short summaries.
 # ---------- CONTACT ----------
 elif menu == "Contact":
     st.title("Contact Us")
-    st.write("📧 Email: your@email.com")
+    st.write("📧 Email: shazidraja0@gmail.com")
 
 # ---------- PRIVACY ----------
 elif menu == "Privacy Policy":
