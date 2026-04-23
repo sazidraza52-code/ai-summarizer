@@ -1,7 +1,5 @@
 streamlit
-textblob
 PyPDF2
-openai
-requests
-python-docs
-pandas
+pillow
+pytesseract
+textblob
