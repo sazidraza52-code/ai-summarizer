@@ -1,7 +1,6 @@
 import streamlit as st
 from PyPDF2 import PdfReader
 from PIL import Image
-import pytesseract
 from textblob import TextBlob
 
 st.set_page_config(page_title="AI Summarizer", layout="centered")
@@ -32,8 +31,7 @@ def extract_pdf(file):
     return text
 
 def extract_image(file):
-    image = Image.open(file)
-    return pytesseract.image_to_string(image)
+    return "⚠️ Image OCR not supported in free version"
 
 # -------- MENU --------
 menu = st.sidebar.selectbox("Menu", ["Home", "About Us", "Contact", "Privacy Policy"])
