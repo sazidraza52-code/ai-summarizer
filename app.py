@@ -1,27 +1,25 @@
 import streamlit as st
 from PyPDF2 import PdfReader
-from PIL import Image
-from textblob import TextBlob
 
 st.set_page_config(page_title="AI Summarizer", layout="centered")
 
-# -------- FUNCTIONS --------
-def summarize(text, length=2):
+# ---------- SIDEBAR ----------
+menu = st.sidebar.selectbox("Menu", [
+    "Home",
+    "About Us",
+    "Contact",
+    "Privacy Policy",
+    "Terms & Conditions"
+])
+
+st.sidebar.markdown("---")
+st.sidebar.write("👑 Premium Unlock Required for Image Upload")
+
+# ---------- FUNCTIONS ----------
+
+def summarize(text, length=3):
     sentences = text.split(".")
     return ". ".join(sentences[:length])
-
-def bullet_points(text, length=3):
-    sentences = text.split(".")
-    return sentences[:length]
-
-def get_sentiment(text):
-    score = TextBlob(text).sentiment.polarity
-    if score > 0:
-        return "Positive 😊"
-    elif score < 0:
-        return "Negative 😠"
-    else:
-        return "Neutral 😐"
 
 def extract_pdf(file):
     reader = PdfReader(file)
@@ -30,63 +28,85 @@ def extract_pdf(file):
         text += page.extract_text()
     return text
 
-def extract_image(file):
-    return "⚠️ Image OCR not supported in free version"
+def image_premium():
+    return "⚠️ Image summarization is a PREMIUM feature. Please upgrade."
 
-# -------- MENU --------
-menu = st.sidebar.selectbox("Menu", ["Home", "About Us", "Contact", "Privacy Policy"])
-
-# -------- HOME --------
+# ---------- HOME ----------
 if menu == "Home":
     st.title("🧠 AI Summarizer")
+    st.write("✨ Created and developed by Sazid Shaikh")
 
-    option = st.selectbox("Choose Input Type", ["Text", "PDF", "Image"])
+    option = st.radio("Choose Input Type", ["Text", "PDF File", "Image (Premium)"])
 
-    text = ""
+    length = st.slider("Summary Length", 1, 10, 3)
+
+    text_data = ""
 
     if option == "Text":
-        text = st.text_area("Paste your text")
+        text_data = st.text_area("Paste your text here")
 
-    elif option == "PDF":
+    elif option == "PDF File":
         file = st.file_uploader("Upload PDF", type=["pdf"])
         if file:
-            text = extract_pdf(file)
+            text_data = extract_pdf(file)
 
-    elif option == "Image":
-        file = st.file_uploader("Upload Image", type=["png", "jpg", "jpeg"])
+    elif option == "Image (Premium)":
+        file = st.file_uploader("Upload Image", type=["jpg", "png"])
         if file:
-            text = extract_image(file)
+            st.error(image_premium())
 
-    length = st.slider("Summary Length", 1, 5, 2)
+    if st.button("Summarize"):
+        if text_data:
+            summary = summarize(text_data, length)
+            st.subheader("📌 Summary")
+            st.write(summary)
 
-    if st.button("Generate Summary"):
-        if text:
-            st.subheader("Summary")
-            st.write(summarize(text, length))
+            st.download_button("Download Summary", summary)
 
-            st.subheader("Bullet Points")
-            for i in bullet_points(text, length):
-                st.write("•", i)
-
-            st.subheader("Sentiment")
-            st.write(get_sentiment(text))
         else:
-            st.warning("Please provide input")
+            st.warning("Please enter or upload data")
 
-    st.markdown("---")
-    st.write("Created and developed by Sazid Shaikh")
-
-# -------- ABOUT --------
+# ---------- ABOUT ----------
 elif menu == "About Us":
     st.title("About Us")
-    st.write("This AI summarizer helps students summarize text, PDFs and images easily.")
+    st.write("""
+This AI Summarizer helps users quickly convert long text into short summaries.
 
-# -------- CONTACT --------
+🔹 Free Features:
+- Text summarization
+- PDF summarization
+- Adjustable summary length
+
+🔹 Premium Features:
+- Image summarization (OCR)
+- Advanced AI summaries
+""")
+
+# ---------- CONTACT ----------
 elif menu == "Contact":
-    st.title("Contact")
-    st.write("Email: shazidraja0@gmail.com")
+    st.title("Contact Us")
+    st.write("📧 Email: your@email.com")
 
-# -------- PRIVACY --------
+# ---------- PRIVACY ----------
 elif menu == "Privacy Policy":
     st.title("Privacy Policy")
-    st.write("We do not store any user data. All processing happens temporarily.")
+    st.write("""
+We respect your privacy.
+
+✔ We do NOT store your data  
+✔ All processing is temporary  
+✔ No personal data is saved  
+""")
+
+# ---------- TERMS ----------
+elif menu == "Terms & Conditions":
+    st.title("Terms & Conditions")
+    st.write("""
+By using this website, you agree:
+
+✔ Do not misuse the tool  
+✔ No illegal content  
+✔ Premium features require payment  
+
+We are not responsible for misuse of generated summaries.
+""")
